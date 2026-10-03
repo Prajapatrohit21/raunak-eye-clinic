@@ -6,6 +6,8 @@ import {
   getAppointments,
   updateAppointment,
   deleteAppointment,
+  getAdminPin,
+  setAdminPin,
   Appointment,
   AppointmentStatus,
 } from "@/lib/appointments";
@@ -190,3 +192,33 @@ export async function createManualAppointmentAction(
     };
   }
 }
+
+// ──────────────────────────────────────────────────────────
+// PIN actions (server-side, synced across devices via Redis)
+// ──────────────────────────────────────────────────────────
+export async function getAdminPinAction(): Promise<string> {
+  return await getAdminPin();
+}
+
+export async function updateAdminPinAction(
+  currentPin: string,
+  newPin: string
+): Promise<{ success: boolean; message: string }> {
+  if (!/^\d{4,8}$/.test(newPin)) {
+    return { success: false, message: "PIN must be 4–8 digits." };
+  }
+  const storedPin = await getAdminPin();
+  if (currentPin !== storedPin) {
+    return { success: false, message: "Current PIN is incorrect." };
+  }
+  await setAdminPin(newPin);
+  return { success: true, message: "PIN updated successfully on all devices." };
+}
+
+export async function verifyAdminPinAction(
+  pin: string
+): Promise<{ success: boolean }> {
+  const storedPin = await getAdminPin();
+  return { success: pin === storedPin };
+}
+

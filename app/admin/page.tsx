@@ -7,6 +7,8 @@ import {
   updateAppointmentStatusAction,
   deleteAppointmentAction,
   createManualAppointmentAction,
+  verifyAdminPinAction,
+  updateAdminPinAction,
 } from "@/lib/actions";
 import { Appointment, AppointmentStatus, SERVICE_LABELS } from "@/lib/types";
 import {
@@ -102,11 +104,7 @@ export default function AdminPage() {
   const [isPending, startTransition] = useTransition();
   const [actionMessage, setActionMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  // Get current active PIN from localStorage
-  const getActivePin = () => {
-    if (typeof window === "undefined") return DEFAULT_PIN;
-    return localStorage.getItem("raunak_admin_custom_pin") || DEFAULT_PIN;
-  };
+  // PIN is now stored server-side in Redis — no localStorage PIN
 
   // Gentle chime sound synthesizer
   const playChime = () => {
@@ -200,18 +198,22 @@ export default function AdminPage() {
     }
   }, [selectedAppointment]);
 
-  // Handle PIN submit
-  const handlePinSubmit = (e: React.FormEvent) => {
+  // Handle PIN submit — verify against Redis (synced across all devices)
+  const handlePinSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const currentPin = getActivePin();
-    if (pinInput.trim() === currentPin) {
-      setIsAuthenticated(true);
-      setPinError("");
-      if (rememberDevice) {
-        localStorage.setItem("raunak_admin_auth", "true");
+    setPinError("");
+    try {
+      const result = await verifyAdminPinAction(pinInput.trim());
+      if (result.success) {
+        setIsAuthenticated(true);
+        if (rememberDevice) {
+          localStorage.setItem("raunak_admin_auth", "true");
+        }
+      } else {
+        setPinError("Incorrect PIN. Please enter clinic reception PIN.");
       }
-    } else {
-      setPinError(`Incorrect PIN. Please enter clinic reception PIN.`);
+    } catch {
+      setPinError("Could not verify PIN. Check your internet connection.");
     }
   };
 
@@ -221,14 +223,11 @@ export default function AdminPage() {
     setPinInput("");
   };
 
-  // Handle PIN change
-  const handleChangePin = (e: React.FormEvent) => {
+  // Handle PIN change — saves to Redis so all devices get new PIN instantly
+  const handleChangePin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const activePin = getActivePin();
-    if (currentPinInput !== activePin) {
-      setPinChangeError("Current PIN is incorrect.");
-      return;
-    }
+    setPinChangeError("");
+
     if (newPinInput.length < 4) {
       setPinChangeError("New PIN must be at least 4 digits.");
       return;
@@ -238,14 +237,22 @@ export default function AdminPage() {
       return;
     }
 
-    localStorage.setItem("raunak_admin_custom_pin", newPinInput);
-    setIsPinModalOpen(false);
-    setCurrentPinInput("");
-    setNewPinInput("");
-    setConfirmPinInput("");
-    setPinChangeError("");
-    setActionMessage({ type: "success", text: "Reception PIN updated successfully!" });
-    setTimeout(() => setActionMessage(null), 3000);
+    try {
+      const res = await updateAdminPinAction(currentPinInput, newPinInput);
+      if (res.success) {
+        setIsPinModalOpen(false);
+        setCurrentPinInput("");
+        setNewPinInput("");
+        setConfirmPinInput("");
+        setPinChangeError("");
+        setActionMessage({ type: "success", text: "✅ PIN updated on all devices!" });
+        setTimeout(() => setActionMessage(null), 4000);
+      } else {
+        setPinChangeError(res.message);
+      }
+    } catch {
+      setPinChangeError("Failed to update PIN. Please try again.");
+    }
   };
 
   // Status update

@@ -1,15 +1,23 @@
-import fs from "fs/promises";
-import path from "path";
+import { Redis } from "@upstash/redis";
 import { Appointment, AppointmentStatus, SERVICE_LABELS } from "./types";
 
 export type { Appointment, AppointmentStatus };
 export { SERVICE_LABELS };
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const FILE_PATH = path.join(DATA_DIR, "appointments.json");
+// ──────────────────────────────────────────────────────────
+// Redis client — uses env vars set in Vercel dashboard
+// For local dev: add these to .env.local
+// ──────────────────────────────────────────────────────────
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
-// Seed initial realistic appointments so dashboard looks alive from day 1
-const INITIAL_APPOINTMENTS: Appointment[] = [
+const APPOINTMENTS_KEY = "raunak:appointments";
+const PIN_KEY = "raunak:admin_pin";
+
+// Seed data — only used when database is empty
+const SEED_APPOINTMENTS: Appointment[] = [
   {
     id: "apt_101",
     fullName: "Rameshwar Patel",
@@ -18,7 +26,7 @@ const INITIAL_APPOINTMENTS: Appointment[] = [
     message: "Age: 62 years. Blurred vision in right eye for 3 months.",
     status: "new",
     staffNotes: "New enquiry from website. Needs morning slot.",
-    createdAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(), // 35 mins ago
+    createdAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
   },
   {
@@ -27,11 +35,11 @@ const INITIAL_APPOINTMENTS: Appointment[] = [
     phone: "9827154321",
     service: "retina-care",
     message: "Age: 54 years. Diabetic patient, doctor recommended retina fundus check.",
-    status: "contacted",
-    staffNotes: "Called reception. Sent address on WhatsApp. Scheduled for today 11:30 AM.",
+    status: "confirmed",
+    staffNotes: "Confirmed with Dr Sachin Malviya. Slot fixed.",
     appointmentDate: new Date().toISOString().split("T")[0],
     appointmentTime: "11:30 AM",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(), // 3 hours ago
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
   },
   {
@@ -44,7 +52,7 @@ const INITIAL_APPOINTMENTS: Appointment[] = [
     staffNotes: "Confirmed with Dr Sachin Malviya for Wednesday 4:00 PM.",
     appointmentDate: "2026-10-07",
     appointmentTime: "04:00 PM",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 day ago
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 18).toISOString(),
   },
   {
@@ -55,35 +63,49 @@ const INITIAL_APPOINTMENTS: Appointment[] = [
     message: "Age: 29 years. Frequent headache and computer eye strain.",
     status: "completed",
     staffNotes: "Prescribed anti-glare lenses and dry eye drops.",
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
+    appointmentDate: "2026-10-02",
+    appointmentTime: "02:00 PM",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
   },
 ];
 
-async function ensureDataFile(): Promise<void> {
+// ──────────────────────────────────────────────────────────
+// PIN Management (synced across all devices via Redis)
+// ──────────────────────────────────────────────────────────
+export async function getAdminPin(): Promise<string> {
   try {
-    await fs.mkdir(DATA_DIR, { recursive: true });
-    try {
-      await fs.access(FILE_PATH);
-    } catch {
-      // File doesn't exist yet, seed initial data
-      await fs.writeFile(FILE_PATH, JSON.stringify(INITIAL_APPOINTMENTS, null, 2), "utf-8");
-    }
-  } catch (err) {
-    console.error("Error creating appointments data directory/file:", err);
+    const pin = await redis.get<string>(PIN_KEY);
+    return pin || "1234";
+  } catch {
+    return "1234";
   }
 }
 
+export async function setAdminPin(newPin: string): Promise<void> {
+  await redis.set(PIN_KEY, newPin);
+}
+
+// ──────────────────────────────────────────────────────────
+// Appointment CRUD
+// ──────────────────────────────────────────────────────────
 export async function getAppointments(): Promise<Appointment[]> {
-  await ensureDataFile();
   try {
-    const raw = await fs.readFile(FILE_PATH, "utf-8");
-    const data: Appointment[] = JSON.parse(raw);
+    const data = await redis.get<Appointment[]>(APPOINTMENTS_KEY);
+
+    if (!data || data.length === 0) {
+      // Seed initial data on first run
+      await redis.set(APPOINTMENTS_KEY, SEED_APPOINTMENTS);
+      return SEED_APPOINTMENTS.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    }
+
     return data.sort(
       (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
   } catch (err) {
-    console.error("Failed to read appointments:", err);
+    console.error("Failed to read appointments from Redis:", err);
     return [];
   }
 }
@@ -98,7 +120,6 @@ export async function saveAppointment(input: {
   appointmentDate?: string;
   appointmentTime?: string;
 }): Promise<Appointment> {
-  await ensureDataFile();
   const list = await getAppointments();
   const now = new Date().toISOString();
 
@@ -117,7 +138,7 @@ export async function saveAppointment(input: {
   };
 
   list.unshift(newRecord);
-  await fs.writeFile(FILE_PATH, JSON.stringify(list, null, 2), "utf-8");
+  await redis.set(APPOINTMENTS_KEY, list);
   return newRecord;
 }
 
@@ -125,29 +146,26 @@ export async function updateAppointment(
   id: string,
   updates: Partial<Pick<Appointment, "status" | "staffNotes" | "appointmentDate" | "appointmentTime">>
 ): Promise<Appointment | null> {
-  await ensureDataFile();
   const list = await getAppointments();
   const index = list.findIndex((a) => a.id === id);
   if (index === -1) return null;
 
-  const current = list[index];
   const updated: Appointment = {
-    ...current,
+    ...list[index],
     ...updates,
     updatedAt: new Date().toISOString(),
   };
 
   list[index] = updated;
-  await fs.writeFile(FILE_PATH, JSON.stringify(list, null, 2), "utf-8");
+  await redis.set(APPOINTMENTS_KEY, list);
   return updated;
 }
 
 export async function deleteAppointment(id: string): Promise<boolean> {
-  await ensureDataFile();
   const list = await getAppointments();
   const filtered = list.filter((a) => a.id !== id);
   if (filtered.length === list.length) return false;
 
-  await fs.writeFile(FILE_PATH, JSON.stringify(filtered, null, 2), "utf-8");
+  await redis.set(APPOINTMENTS_KEY, filtered);
   return true;
 }
