@@ -204,14 +204,17 @@ export async function updateAdminPinAction(
   currentPin: string,
   newPin: string
 ): Promise<{ success: boolean; message: string }> {
-  if (!/^\d{4,8}$/.test(newPin)) {
+  const cleanNewPin = String(newPin || "").trim();
+  const cleanCurrentPin = String(currentPin || "").trim();
+
+  if (!/^\d{4,8}$/.test(cleanNewPin)) {
     return { success: false, message: "PIN must be 4–8 digits." };
   }
   const storedPin = await getAdminPin();
-  if (currentPin !== storedPin) {
+  if (cleanCurrentPin !== String(storedPin).trim()) {
     return { success: false, message: "Current PIN is incorrect." };
   }
-  await setAdminPin(newPin);
+  await setAdminPin(cleanNewPin);
   return { success: true, message: "PIN updated successfully on all devices." };
 }
 
@@ -219,6 +222,9 @@ export async function verifyAdminPinAction(
   pin: string
 ): Promise<{ success: boolean }> {
   const storedPin = await getAdminPin();
-  return { success: pin === storedPin };
+  const inputPin = String(pin || "").trim();
+  const actualPin = String(storedPin || "").trim();
+  return { success: Boolean(inputPin && inputPin === actualPin) };
 }
+
 

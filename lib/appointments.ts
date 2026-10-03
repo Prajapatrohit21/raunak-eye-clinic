@@ -75,15 +75,16 @@ const SEED_APPOINTMENTS: Appointment[] = [
 // ──────────────────────────────────────────────────────────
 export async function getAdminPin(): Promise<string> {
   try {
-    const pin = await redis.get<string>(PIN_KEY);
-    return pin || "1234";
+    const pin = await redis.get<any>(PIN_KEY);
+    if (pin === null || pin === undefined) return "1234";
+    return String(pin).trim();
   } catch {
     return "1234";
   }
 }
 
 export async function setAdminPin(newPin: string): Promise<void> {
-  await redis.set(PIN_KEY, newPin);
+  await redis.set(PIN_KEY, String(newPin).trim());
 }
 
 // ──────────────────────────────────────────────────────────
