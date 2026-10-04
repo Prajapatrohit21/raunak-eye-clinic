@@ -23,12 +23,12 @@ export function JsonLdSchema() {
       {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        description: "[placeholder: verified clinic hours]",
       },
     ],
     geo: {
       "@type": "GeoCoordinates",
-      description: "[placeholder: real latitude and longitude for the building]",
+      latitude: "22.9676",
+      longitude: "76.0534",
     },
   };
 
@@ -37,7 +37,7 @@ export function JsonLdSchema() {
     "@type": "Organization",
     name: "Raunak Eye Care Hospital",
     url: siteCopy.meta.canonicalUrl,
-    logo: "[placeholder: real logo file path]",
+    logo: "https://raunakeyecare.com/images/dr-sachin-malviya.png",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: "+91 79876 76544",

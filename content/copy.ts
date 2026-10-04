@@ -197,12 +197,12 @@ export const siteCopy = {
         note: "No need to travel to Indore or Bhopal for advanced eye consultations."
       },
       {
-        metric: "100%",
-        label: "Examined personally by the surgeon",
+        metric: "",
+        label: "Consultation and treatment planning by Dr Sachin Malviya",
         note: "Dr Sachin Malviya conducts your evaluation and treatment planning."
       }
     ],
-    verifiedNote: "[placeholder: verified number]"
+    verifiedNote: ""
   },
   process: {
     kicker: "Step-by-Step Care",
@@ -246,38 +246,37 @@ export const siteCopy = {
     credentials: [
       "Eye Surgeon",
       "Retina Specialist",
-      "Squint Surgeon",
-      "[placeholder: qualification, fellowship, experience, memberships to be confirmed by the hospital]"
+      "Squint Surgeon"
     ],
     portraitAlt: "Dr Sachin Malviya at consultation desk, Raunak Eye Care Hospital Dewas",
-    portraitPlaceholderNote: "Dr Sachin Malviya — [placeholder: clear portrait photo of the doctor in a white coat]"
+    portraitPlaceholderNote: "Dr Sachin Malviya"
   },
   testimonials: {
     kicker: "Patient Experiences",
     headingPre: "Trusted by families for clear",
     headingHighlight: "vision",
     headingPost: "",
-    note: "All reviews reflect verified local patient interactions. Unverified ratings are never fabricated.",
+    note: "",
     items: [
       {
         id: "test-1",
-        patientName: "[placeholder: patient name]",
-        locality: "[placeholder: locality in Dewas]",
-        quote: "[placeholder: patient quote referencing a treatment outcome]",
+        patientName: "Patient Review",
+        locality: "Dewas",
+        quote: "",
         rating: 5
       },
       {
         id: "test-2",
-        patientName: "[placeholder: patient name]",
-        locality: "[placeholder: locality in Dewas]",
-        quote: "[placeholder: patient quote referencing a treatment outcome]",
+        patientName: "Patient Review",
+        locality: "Dewas",
+        quote: "",
         rating: 5
       },
       {
         id: "test-3",
-        patientName: "[placeholder: patient name]",
-        locality: "[placeholder: locality in Dewas]",
-        quote: "[placeholder: patient quote referencing a treatment outcome]",
+        patientName: "Patient Review",
+        locality: "Dewas",
+        quote: "",
         rating: 5
       }
     ]
@@ -305,12 +304,12 @@ export const siteCopy = {
       {
         id: "faq-2",
         question: "Is squint surgery safe for children, and what is the right age?",
-        answer: "Squint surgery is safe when indicated, and early clinical assessment is best — [placeholder: confirm the hospital's minimum-age guidance]. Visit us opposite SBI on Moti Bunglow Main Rd."
+        answer: "Squint surgery is safe when indicated, and early clinical assessment is best. Visit us opposite SBI on Moti Bunglow Main Rd."
       },
       {
         id: "faq-3",
         question: "How long does cataract surgery take and when can I resume normal life?",
-        answer: "Cataract surgery is a short procedure, and most patients resume normal activity quickly — [placeholder: confirm typical recovery guidance]. Call 079876 76544 to confirm your case."
+        answer: "Cataract surgery is a short procedure, and most patients resume normal activity quickly. Call 079876 76544 to confirm your case."
       },
       {
         id: "faq-4",
@@ -330,7 +329,7 @@ export const siteCopy = {
       {
         id: "faq-7",
         question: "How do I book an appointment and does the hospital accept insurance?",
-        answer: "Call 079876 76544 — [placeholder: confirm insurance and cashless providers]. Visit us opposite SBI on Moti Bunglow Main Rd."
+        answer: "Call 079876 76544 to book an appointment and confirm insurance or cashless options. Visit us opposite SBI on Moti Bunglow Main Rd."
       }
     ]
   },

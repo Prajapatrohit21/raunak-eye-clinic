@@ -2,7 +2,13 @@ import React from "react";
 import { siteCopy } from "@/content/copy";
 import { Star } from "lucide-react";
 
+export const SHOW_TESTIMONIALS = false;
+
 export function Testimonials() {
+  if (!SHOW_TESTIMONIALS) {
+    return null;
+  }
+
   return (
     <section
       id="reviews"

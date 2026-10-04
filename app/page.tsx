@@ -10,6 +10,8 @@ import { Location } from "@/components/sections/location";
 import { Faq } from "@/components/sections/faq";
 import { FinalCta } from "@/components/sections/final-cta";
 
+const SHOW_TESTIMONIALS = false;
+
 export default function HomePage() {
   return (
     <>
@@ -32,7 +34,7 @@ export default function HomePage() {
       <About />
 
       {/* 8 Testimonials */}
-      <Testimonials />
+      {SHOW_TESTIMONIALS && <Testimonials />}
 
       {/* 9 Location & Map */}
       <Location />

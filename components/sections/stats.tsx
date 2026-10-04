@@ -30,11 +30,13 @@ export function Stats() {
           {siteCopy.stats.items.map((stat, idx) => (
             <div
               key={idx}
-              className="flex flex-col items-center p-4 rounded-xl bg-[#FBF7F0]/5 border border-[#FBF7F0]/10 backdrop-blur-sm"
+              className="flex flex-col items-center justify-center p-4 rounded-xl bg-[#FBF7F0]/5 border border-[#FBF7F0]/10 backdrop-blur-sm"
             >
-              <div className="font-serif text-4xl md:text-5xl font-semibold text-[#C17F3A] mb-2 tracking-tight">
-                {stat.metric}
-              </div>
+              {stat.metric ? (
+                <div className="font-serif text-4xl md:text-5xl font-semibold text-[#C17F3A] mb-2 tracking-tight">
+                  {stat.metric}
+                </div>
+              ) : null}
               <div className="font-sans font-semibold text-lg text-[#FBF7F0] mb-2">
                 {stat.label}
               </div>
@@ -48,8 +50,7 @@ export function Stats() {
         {/* Support Note & Direct Call Line */}
         <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-[#FBF7F0]/15 text-xs text-[#FBF7F0]/70">
           <p className="italic">
-            Verified clinical practice standards • Experience metrics:{" "}
-            <span className="text-[#C17F3A] font-medium">{siteCopy.stats.verifiedNote}</span>
+            Verified clinical practice standards
           </p>
 
           <a

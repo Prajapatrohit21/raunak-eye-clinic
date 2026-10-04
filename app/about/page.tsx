@@ -42,9 +42,6 @@ export default function AboutPage() {
               </div>
               <div className="mt-4 text-center">
                 <span className="font-serif text-xl font-semibold text-[#201D18]">Dr Sachin Malviya</span>
-                <p className="text-xs text-[#201D18]/70 mt-1">
-                  {siteCopy.about.portraitPlaceholderNote}
-                </p>
               </div>
             </div>
 
@@ -80,7 +77,7 @@ export default function AboutPage() {
                   {siteCopy.about.credentials.map((cred, idx) => (
                     <li key={idx} className="flex items-start gap-2.5 text-sm text-[#201D18]">
                       <ShieldCheck className="w-4 h-4 text-[#0E4D4C] shrink-0 mt-0.5" strokeWidth={1.75} />
-                      <span className={cred.startsWith("[placeholder") ? "text-[#C17F3A] italic" : "font-medium"}>
+                      <span className="font-medium">
                         {cred}
                       </span>
                     </li>

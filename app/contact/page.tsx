@@ -54,9 +54,6 @@ export default function ContactPage() {
                 {siteCopy.contact.phoneDisplay}
               </a>
               <p className="text-xs text-[#201D18]/70 mt-2">
-                [placeholder: confirm clinic hours]
-              </p>
-              <p className="text-xs text-[#201D18]/70 mt-1">
                 Emergency calls attended immediately
               </p>
             </div>
@@ -126,7 +123,7 @@ export default function ContactPage() {
               {
                 icon: Clock,
                 title: "Clinic Hours",
-                content: "[placeholder: confirmed OPD hours — morning session and evening session]",
+                content: "Morning and evening OPD sessions available. Call 079876 76544 to confirm current doctor timings.",
               },
               {
                 icon: Phone,

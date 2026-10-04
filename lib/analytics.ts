@@ -9,7 +9,7 @@ export type AnalyticsEventName =
 export function trackEvent(name: AnalyticsEventName, properties?: Record<string, unknown>): void {
   if (typeof window === "undefined") return;
 
-  // Dispatch to [placeholder: analytics provider, e.g., Plausible, PostHog, or Google Analytics 4]
+  // Dispatch to configured analytics provider (e.g. Plausible, PostHog, or Google Analytics 4)
   try {
     if (process.env.NODE_ENV === "development") {
       console.log(`[Analytics Event: ${name}]`, properties || {});

@@ -45,7 +45,7 @@ const serviceDetails: Record<string, {
       "Children who frequently tilt or turn their head to see clearly",
       "Parents concerned about asymmetric eye contact in their infant",
     ],
-    procedure: "Evaluation includes cover testing, cycloplegic refraction, and full ocular motility assessment. Treatment may be corrective glasses and eye patching, vision therapy exercises, or precise surgical adjustment of the eye muscles under general or local anaesthesia. [placeholder: confirm the hospital's minimum-age guidance for squint surgery].",
+    procedure: "Evaluation includes cover testing, cycloplegic refraction, and full ocular motility assessment. Treatment may be corrective glasses and eye patching, vision therapy exercises, or precise surgical adjustment of the eye muscles under general or local anaesthesia.",
     recovery: "Surgery is typically a day procedure. Mild redness and swelling settle within 1–2 weeks. Post-surgical glasses or continued therapy may be required. Dr Malviya schedules regular follow-ups to monitor alignment during the critical developmental period.",
   },
   "cataract-surgery": {
@@ -61,7 +61,7 @@ const serviceDetails: Record<string, {
       "Older adults whose glasses are no longer correcting vision adequately",
       "Anyone told by another doctor that cataract is the cause of their vision drop",
     ],
-    procedure: "Micro-incision phacoemulsification (ultrasound fragmentation of the cataract) is performed through a self-sealing 2.2mm incision — no stitches needed in most cases. A premium IOL (monofocal, toric for astigmatism, or multifocal) is then inserted. The whole procedure takes approximately 15–20 minutes. [placeholder: confirm typical recovery guidance with the hospital].",
+    procedure: "Micro-incision phacoemulsification (ultrasound fragmentation of the cataract) is performed through a self-sealing 2.2mm incision — no stitches needed in most cases. A premium IOL (monofocal, toric for astigmatism, or multifocal) is then inserted. The whole procedure takes approximately 15–20 minutes.",
     recovery: "Most patients notice improved vision the next morning. Normal indoor activities resume within 2–3 days. Driving is permitted after 1 week in most cases. Medicated eye drops are prescribed for 4–6 weeks. Dr Malviya personally reviews recovery at each post-operative visit.",
   },
   "complete-checkup": {

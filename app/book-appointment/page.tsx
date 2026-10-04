@@ -213,9 +213,6 @@ export default function BookAppointmentPage() {
                 >
                   079876 76544
                 </a>
-                <p className="text-xs text-[#FBF7F0]/60 mt-1">
-                  [placeholder: confirmed OPD hours]
-                </p>
               </div>
 
               {/* Address Card */}
